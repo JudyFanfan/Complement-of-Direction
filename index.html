@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卢浮宫珠宝失窃案 - 方向补语侦探游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('https://n.sinaimg.cn/sinacn/w1500h991/20180224/64b7-fyrwsqh7948784.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #f1c40f;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #ecf0f1;
+            margin-bottom: 20px;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .intro {
+            background: rgba(52, 152, 219, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 1.6;
+            border-left: 5px solid #3498db;
+        }
+        
+        .intro-en {
+            background: rgba(46, 204, 113, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-style: italic;
+            border-left: 5px solid #2ecc71;
+        }
+        
+        .suspects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .suspect-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+            height: 300px;
+            perspective: 1000px;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .suspect-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .card-front {
+            background: rgba(52, 73, 94, 0.8);
+        }
+        
+        .card-back {
+            background: rgba(41, 128, 185, 0.9);
+            transform: rotateY(180deg);
+            overflow-y: auto;
+        }
+        
+        .suspect-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .suspect-card.selected {
+            border-color: #e74c3c;
+        }
+        
+        .suspect-name {
+            font-size: 1.3rem;
+            color: #f1c40f;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .pinyin {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+        
+        .suspect-role {
+            font-style: italic;
+            color: #bdc3c7;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .statement {
+            text-align: left;
+            width: 100%;
+        }
+        
+        .statement p {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .keyword {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .vocab {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #accuseBtn {
+            background: #e74c3c;
+        }
+        
+        #accuseBtn:hover {
+            background: #c0392b;
+        }
+        
+        #resetBtn {
+            background: #2ecc71;
+        }
+        
+        #resetBtn:hover {
+            background: #27ae60;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        .correct {
+            background: rgba(46, 204, 113, 0.3);
+            border: 2px solid #2ecc71;
+        }
+        
+        .incorrect {
+            background: rgba(231, 76, 60, 0.3);
+            border: 2px solid #e74c3c;
+        }
+        
+        .explanation {
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .grammar-rule {
+            margin-top: 30px;
+            background: rgba(52, 152, 219, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .grammar-rule h3 {
+            color: #f1c40f;
+            margin-bottom: 15px;
+        }
+        
+        .rule-example {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+        
+        .correct-example {
+            color: #2ecc71;
+        }
+        
+        .incorrect-example {
+            color: #e74c3c;
+        }
+        
+        .translation {
+            font-style: italic;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* 小偷动画样式 */
+        .thief-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+        
+        .thief-container {
+            position: relative;
+            width: 200px;
+            height: 300px;
+        }
+        
+        .thief {
+            position: absolute;
+            width: 120px;
+            height: 180px;
+            background: #333;
+            border-radius: 60px 60px 10px 10px;
+            animation: thiefMove 3s ease-in-out infinite;
+        }
+        
+        .thief-head {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #222;
+            border-radius: 50%;
+            top: -40px;
+            left: 20px;
+            overflow: hidden;
+        }
+        
+        .thief-mask {
+            position: absolute;
+            width: 60px;
+            height: 40px;
+            background: #111;
+            border-radius: 30px 30px 0 0;
+            top: 20px;
+            left: 10px;
+        }
+        
+        .thief-eye {
+            position: absolute;
+            width: 15px;
+            height: 8px;
+            background: #ff0000;
+            border-radius: 50%;
+            top: 35px;
+            animation: eyeBlink 2s infinite;
+        }
+        
+        .thief-eye.left {
+            left: 20px;
+        }
+        
+        .thief-eye.right {
+            right: 20px;
+        }
+        
+        .thief-body {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: #444;
+            top: 40px;
+            left: 10px;
+            border-radius: 10px;
+        }
+        
+        .thief-arm {
+            position: absolute;
+            width: 20px;
+            height: 60px;
+            background: #333;
+            top: 50px;
+            animation: armMove 2s ease-in-out infinite;
+        }
+        
+        .thief-arm.left {
+            left: -15px;
+            transform-origin: top right;
+        }
+        
+        .thief-arm.right {
+            right: -15px;
+            transform-origin: top left;
+        }
+        
+        .thief-leg {
+            position: absolute;
+            width: 25px;
+            height: 70px;
+            background: #222;
+            bottom: 0;
+            animation: legMove 1s ease-in-out infinite;
+        }
+        
+        .thief-leg.left {
+            left: 25px;
+        }
+        
+        .thief-leg.right {
+            right: 25px;
+        }
+        
+        .thief-bag {
+            position: absolute;
+            width: 40px;
+            height: 30px;
+            background: #8B4513;
+            border-radius: 5px;
+            top: 60px;
+            right: -30px;
+            animation: bagMove 2s ease-in-out infinite;
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f1c40f;
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkle 1.5s infinite;
+        }
+        
+        @keyframes thiefMove {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes eyeBlink {
+            0%, 45%, 55%, 100% { height: 8px; }
+            50% { height: 2px; }
+        }
+        
+        @keyframes armMove {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+        
+        @keyframes legMove {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @keyframes bagMove {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(5deg); }
+        }
+        
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+        
+        .success-message {
+            color: #f1c40f;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.7);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @media (max-width: 768px) {
+            .suspects {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>卢浮宫珠宝失窃案</h1>
+            <p class="subtitle">方向补语侦探游戏 - 找出语法错误抓住小偷！</p>
+        </header>
+        
+        <div class="game-area">
+            <div class="intro">
+                <p>深夜，卢浮宫一颗名为"法国之心"的珍贵<span class="vocab">宝石(bǎoshí, gem)</span>被盗了！当晚只有4名嫌疑人在博物馆内。</p>
+                <p>你作为侦探，需要通过审问他们的口供，找出谁在说谎。说谎者就是小偷！</p>
+                <p><strong>关键线索：</strong> 说谎的破绽隐藏在方向补语（动词+来/去）的使用中。仔细分析每个人的口供，找出语法错误！</p>
+                
+                <div class="intro-en">
+                    <p>Late at night, a precious <span class="vocab">gem(bǎoshí)</span> called "Heart of France" was stolen from the Louvre Museum! Only 4 suspects were in the museum that night.</p>
+                    <p>As a detective, you need to find out who is lying by examining their statements. The liar is the thief!</p>
+                    <p><strong>Key clue:</strong> The flaw in the lie is hidden in the use of directional complements (verb + 来/去). Carefully analyze each person's statement to find the grammatical error!</p>
+                </div>
+            </div>
+            
+            <div class="suspects">
+                <div class="suspect-card" data-suspect="A">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="suspect-name">
+                                👮 皮埃尔
+                                <span class="pinyin">Pí'āi'ěr</span>
+                            </div>
+                            <div class="suspect-role">
+                                <span class="vocab">保安(bǎo'ān, security guard)</span>队长
+                                <div class="translation">Security Captain</div>
+                            </div>
+                            <p>点击查看口供</p>
+                        </div>
+                        <div class="card-back">
+                            <div class="statement">
+                                <p>"晚上10点，我正在三楼，准备从楼上<span class="keyword">下来</span>。"</p>
+                                <p>"突然，我听到<span class="vocab">宝石(bǎoshí, gem)</span>大厅有很大的声音。"</p>
+                                <p>"我马上给同事打电话说：'快<span class="keyword">过来</span>！<span class="vocab">宝石(bǎoshí, gem)</span>大厅有问题。'"</p>
+                                <p>"然后我马上就跑了<span class="keyword">过去</span>。"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="suspect-card" data-suspect="B">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="suspect-name">
+                                🧹 玛丽
+                                <span class="pinyin">Mǎlì</span>
+                            </div>
+                            <div class="suspect-role">
+                                <span class="vocab">清洁工(qīngjiégōng, cleaner)</span>
+                                <div class="translation">Cleaner</div>
+                            </div>
+                            <p>点击查看口供</p>
+                        </div>
+                        <div class="card-back">
+                            <div class="statement">
+                                <p>"我在<span class="vocab">工具房(gōngjùfáng, tool room)</span>休息，听到声音后走<span class="keyword">出来</span>看。"</p>
+                                <p>"我看到有人从大厅跑<span class="keyword">进来</span>。"</p>
+                                <p>"皮埃尔叫我<span class="keyword">出去</span>帮忙。"</p>
+                                <p>"事情结束后，我就<span class="keyword">过来</span><span class="vocab">工具房(gōngjùfáng, tool room)</span>了。"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="suspect-card" data-suspect="C">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="suspect-name">
+                                👨‍🔬 杜邦
+                                <span class="pinyin">Dùbāng</span>
+                            </div>
+                            <div class="suspect-role">
+                                <span class="vocab">研究员(yánjiūyuán, researcher)</span>
+                                <div class="translation">Researcher</div>
+                            </div>
+                            <p>点击查看口供</p>
+                        </div>
+                        <div class="card-back">
+                            <div class="statement">
+                                <p>"我在二楼办公室，准备<span class="keyword">回去</span>了。"</p>
+                                <p>"听到声音以后，我从办公室<span class="keyword">出来</span>了。"</p>
+                                <p>"我看到皮埃尔从三楼<span class="keyword">下来</span>。"</p>
+                                <p>"我们一起赶<span class="keyword">过去</span>查看。"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="suspect-card" data-suspect="D">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="suspect-name">
+                                👨‍💼 约翰
+                                <span class="pinyin">Yuēhàn</span>
+                            </div>
+                            <div class="suspect-role">
+                                游客（中文不太好）
+                                <div class="translation">Tourist (not good at Chinese)</div>
+                            </div>
+                            <p>点击查看口供</p>
+                        </div>
+                        <div class="card-back">
+                            <div class="statement">
+                                <p>"我只是游客，我<span class="vocab">迷路(mílù, get lost)</span>了。"</p>
+                                <p>"我想从博物馆<span class="keyword">出去</span>。"</p>
+                                <p>"我听到声音，很害怕，<span class="vocab">躲(duǒ, hide)</span>进厕所了。"</p>
+                                <p>"<span class="vocab">保安(bǎo'ān, security guard)</span>找我，我才<span class="keyword">出来</span>。"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="accuseBtn">
+                    指认小偷！<br>
+                    <span style="font-size:0.8rem">zhǐrèn xiǎotōu! (Identify the thief!)</span>
+                </button>
+                <button id="resetBtn">重新开始</button>
+            </div>
+            
+            <div id="result" class="result">
+                <h2 id="resultTitle"></h2>
+                <p id="resultMessage"></p>
+                <div id="explanation" class="explanation"></div>
+            </div>
+            
+            <div class="grammar-rule">
+                <h3>方向补语规则提示</h3>
+                <p>方向补语表示动作的方向，由动词和"来"或"去"组成：</p>
+                <div class="rule-example">
+                    <p><strong>正确用法：</strong></p>
+                    <p class="correct-example">• 他跑<span class="keyword">过来</span>了。（朝向说话人）</p>
+                    <p class="correct-example">• 他跑<span class="keyword">过去</span>了。（远离说话人）</p>
+                    <p class="correct-example">• 他从房间里走<span class="keyword">出来</span>。</p>
+                    <p class="correct-example">• 他回宿舍<span class="keyword">去</span>了。</p>
+                </div>
+                <div class="rule-example">
+                    <p><strong>常见错误：</strong></p>
+                    <p class="incorrect-example">• 他回宿舍<span class="keyword">回去</span>了。（重复错误）</p>
+                    <p class="incorrect-example">• 他躲进厕所里<span class="keyword">出来</span>。（逻辑矛盾）</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 小偷动画 -->
+    <div class="thief-animation" id="thiefAnimation">
+        <div class="success-message">
+            恭喜！你抓住了小偷！<br>
+            <span style="font-size: 1.2rem">Gōngxǐ! Nǐ zhuāzhùle xiǎotōu! (Congratulations! You caught the thief!)</span>
+        </div>
+        <div class="thief-container">
+            <div class="thief">
+                <div class="thief-head">
+                    <div class="thief-mask"></div>
+                    <div class="thief-eye left"></div>
+                    <div class="thief-eye right"></div>
+                </div>
+                <div class="thief-body"></div>
+                <div class="thief-arm left"></div>
+                <div class="thief-arm right"></div>
+                <div class="thief-leg left"></div>
+                <div class="thief-leg right"></div>
+                <div class="thief-bag"></div>
+            </div>
+            <!-- 添加闪光效果 -->
+            <div class="sparkle" style="top: 20px; left: 50px; animation-delay: 0s;"></div>
+            <div class="sparkle" style="top: 50px; right: 40px; animation-delay: 0.3s;"></div>
+            <div class="sparkle" style="bottom: 30px; left: 30px; animation-delay: 0.6s;"></div>
+            <div class="sparkle" style="bottom: 60px; right: 60px; animation-delay: 0.9s;"></div>
+            <div class="sparkle" style="top: 80px; left: 70px; animation-delay: 1.2s;"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const suspectCards = document.querySelectorAll('.suspect-card');
+            const accuseBtn = document.getElementById('accuseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const resultDiv = document.getElementById('result');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+            const explanationDiv = document.getElementById('explanation');
+            const thiefAnimation = document.getElementById('thiefAnimation');
+            
+            let selectedSuspect = null;
+            let animationTimeout = null;
+            
+            // 翻转卡牌查看口供
+            suspectCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 如果已经选中了其他嫌疑人，先取消选择
+                    if (selectedSuspect && selectedSuspect !== this.getAttribute('data-suspect')) {
+                        suspectCards.forEach(c => {
+                            if (c.getAttribute('data-suspect') === selectedSuspect) {
+                                c.classList.remove('selected');
+                                c.classList.remove('flipped');
+                            }
+                        });
+                    }
+                    
+                    // 翻转当前卡牌
+                    this.classList.toggle('flipped');
+                    
+                    // 选择或取消选择当前嫌疑人
+                    if (this.classList.contains('flipped')) {
+                        this.classList.add('selected');
+                        selectedSuspect = this.getAttribute('data-suspect');
+                    } else {
+                        this.classList.remove('selected');
+                        selectedSuspect = null;
+                    }
+                });
+            });
+            
+            // 指认小偷
+            accuseBtn.addEventListener('click', function() {
+                if (!selectedSuspect) {
+                    alert('请先选择一个嫌疑人！');
+                    return;
+                }
+                
+                const isCorrect = selectedSuspect === 'B';
+                
+                resultDiv.style.display = 'block';
+                resultDiv.className = isCorrect ? 'result correct' : 'result incorrect';
+                
+                if (isCorrect) {
+                    // 显示小偷动画
+                    thiefAnimation.style.display = 'flex';
+                    
+                    // 10秒后自动隐藏动画
+                    if (animationTimeout) {
+                        clearTimeout(animationTimeout);
+                    }
+                    animationTimeout = setTimeout(() => {
+                        thiefAnimation.style.display = 'none';
+                    }, 10000);
+                    
+                    resultTitle.textContent = '恭喜！你抓住了小偷！';
+                    resultMessage.textContent = '你成功识别出了玛丽口供中的语法错误，她就是偷走宝石的小偷！';
+                    
+                    explanationDiv.innerHTML = `
+                        <h3>错误分析 - Cuòwù fēnxī (Error Analysis)</h3>
+                        <p>玛丽说："我看到有人从大厅跑<span class="keyword">进来</span>。"</p>
+                        <p><strong>错误原因：</strong> 玛丽说她在工具房，听到声音后走出来。如果她在工具房（大厅外面），应该看到人"从大厅跑<span class="keyword">出来</span>"。她说"跑<span class="keyword">进来</span>"，意味着她当时正在大厅里面，这与她的其他陈述矛盾。</p>
+                        <p>玛丽还说："事情结束后，我就<span class="keyword">过来</span><span class="vocab">工具房(gōngjùfáng, tool room)</span>了。"</p>
+                        <p><strong>错误原因：</strong> "过来"表示朝向说话人的方向移动，但玛丽是要去工具房，应该使用表示远离说话人的"过去"。</p>
+                        <p><strong>正确说法：</strong> "事情结束后，我就回<span class="vocab">工具房(gōngjùfáng, tool room)</span><span class="keyword">去</span>了。" 或者 "我就回<span class="vocab">工具房(gōngjùfáng, tool room)</span><span class="keyword">去</span>了。"</p>
+                        <p>玛丽在描述自己最后的行为时露出了马脚，她为了把自己的行为描述得很自然，却不小心用错了方向补语，暴露了她可能在编造故事。</p>
+                        <div class="translation">
+                            <h4>English Translation:</h4>
+                            <p>Mary said: "I saw someone run into the hall from the hall."</p>
+                            <p><strong>Error reason:</strong> Mary said she was in the tool room and came out after hearing the sound. If she was in the tool room (outside the hall), she should have seen someone "run out of the hall". Saying "run into" means she was inside the hall at the time, which contradicts her other statements.</p>
+                            <p>Mary also said: "After everything was over, I came over to the tool room."</p>
+                            <p><strong>Error reason:</strong> "过来" indicates movement toward the speaker, but Mary was going to the tool room, so she should use "过去" which indicates movement away from the speaker.</p>
+                            <p><strong>Correct way to say it:</strong> "After everything was over, I went back to the tool room." or "I went back to the tool room."</p>
+                            <p>Mary revealed her flaw when describing her final actions. While trying to make her behavior sound natural, she accidentally used the wrong directional complement, exposing that she might be fabricating the story.</p>
+                        </div>
+                    `;
+                } else {
+                    resultTitle.textContent = '错误！这个人不是小偷！';
+                    resultMessage.textContent = '再仔细分析一下每个人的口供，找出真正的语法错误！';
+                    
+                    let suspectName = '';
+                    switch(selectedSuspect) {
+                        case 'A': suspectName = '皮埃尔(Pí\'āi\'ěr)'; break;
+                        case 'C': suspectName = '杜邦(Dùbāng)'; break;
+                        case 'D': suspectName = '约翰(Yuēhàn)'; break;
+                    }
+                    
+                    explanationDiv.innerHTML = `
+                        <h3>提示：</h3>
+                        <p>${suspectName}的口供中虽然有让人怀疑的地方，但语法基本正确。</p>
+                        <p>仔细检查每个人的口供，特别留意方向补语的使用是否合理。</p>
+                        <p>记住：小偷的口供中会有一个明显的语法错误！</p>
+                        <div class="translation">
+                            <h4>English Translation:</h4>
+                            <p>Although ${suspectName}'s statement has some suspicious aspects, the grammar is basically correct.</p>
+                            <p>Carefully examine each person's statement, paying special attention to whether the use of directional complements is reasonable.</p>
+                            <p>Remember: The thief's statement will have an obvious grammatical error!</p>
+                        </div>
+                    `;
+                }
+            });
+            
+            // 重新开始
+            resetBtn.addEventListener('click', function() {
+                suspectCards.forEach(c => {
+                    c.classList.remove('selected');
+                    c.classList.remove('flipped');
+                });
+                selectedSuspect = null;
+                resultDiv.style.display = 'none';
+                thiefAnimation.style.display = 'none';
+                if (animationTimeout) {
+                    clearTimeout(animationTimeout);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
