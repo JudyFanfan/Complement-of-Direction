@@ -54,6 +54,37 @@
             margin-bottom: 20px;
         }
         
+        .instruction {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 3px solid #f1c40f;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        .instruction-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        
+        .instruction-pinyin {
+            font-size: 1rem;
+            color: #f1c40f;
+            margin-bottom: 8px;
+        }
+        
+        .instruction-translation {
+            font-size: 1rem;
+            font-style: italic;
+            color: #ecf0f1;
+        }
+        
         .game-area {
             display: flex;
             flex-direction: column;
@@ -423,6 +454,11 @@
             animation: sparkle 1.5s infinite;
         }
         
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); }
+            50% { transform: scale(1.02); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); }
+        }
+        
         @keyframes thiefMove {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
@@ -463,11 +499,6 @@
             animation: pulse 1.5s infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
         @media (max-width: 768px) {
             .suspects {
                 grid-template-columns: 1fr;
@@ -475,6 +506,10 @@
             
             h1 {
                 font-size: 2rem;
+            }
+            
+            .instruction-text {
+                font-size: 1.1rem;
             }
         }
     </style>
@@ -485,6 +520,13 @@
             <h1>卢浮宫珠宝失窃案</h1>
             <p class="subtitle">方向补语侦探游戏 - 找出语法错误抓住小偷！</p>
         </header>
+        
+        <!-- 添加的指示部分 -->
+        <div class="instruction">
+            <div class="instruction-text">你选一个角色，读一读这个人说的话，你不能改这个人的句子</div>
+            <div class="instruction-pinyin">Nǐ xuǎn yīgè juésè, dú yī dú zhège rén shuō dehuà, nǐ bùnéng gǎi zhège rén de jùzi</div>
+            <div class="instruction-translation">Choose a character, read what this person says, you cannot change this person's sentences</div>
+        </div>
         
         <div class="game-area">
             <div class="intro">
